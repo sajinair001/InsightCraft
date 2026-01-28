@@ -3452,7 +3452,6 @@ a.method-value:hover {
         </div>
     </footer>
 
-    <script src="script.js"></script>
     <script>
         // === Contact form backend (Google Apps Script Web App) ===
         const CONTACT_ENDPOINT = "https://script.google.com/macros/s/AKfycbx9eA6etrH9VK3ZDRqJUFl7sC4k-3cErliQ5YZb9D4TBKJcaIG-UPGNG2OoetBixKB-Bg/exec";
@@ -3489,7 +3488,8 @@ a.method-value:hover {
                 try {
                     const res = await fetch(CONTACT_ENDPOINT, {
                         method: "POST",
-                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        //headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(payload)
                     });
 
