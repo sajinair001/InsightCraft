@@ -1653,6 +1653,15 @@ a.method-value:hover {
 
 .form-status { margin-top: 12px; font-size: 0.95rem; }
 
+
+.form-status.error { color: #b91c1c; }
+.recaptcha-row { display: flex; justify-content: center; }
+.recaptcha-row .g-recaptcha { transform-origin: 0 0; }
+@media (max-width: 420px) {
+  /* Scale reCAPTCHA slightly on very small screens */
+  .recaptcha-row .g-recaptcha { transform: scale(0.92); }
+}
+
 /* ============================================
    Responsive Design
    ============================================ */
@@ -2265,6 +2274,8 @@ a.method-value:hover {
 
 
     </style>
+    <!-- Google reCAPTCHA v2 (checkbox) -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -3356,6 +3367,12 @@ a.method-value:hover {
                             <label for="message">Tell Us About Your Challenge</label>
                             <textarea id="message" name="message" rows="4" placeholder="Describe your current challenges or goals..."></textarea>
                         </div>
+                        <!-- Spam protection -->
+                        <div class="form-group full-width recaptcha-row">
+                            <!-- site key -->
+                            <div class="g-recaptcha" data-sitekey="6Ldhl1gsAAAAACSkFW9nZ2wzYHLfTqmdwKLAcq6y"></div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary btn-full">
                             Send Message
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3432,37 +3449,63 @@ a.method-value:hover {
 
     <script src="script.js"></script>
     <script>
-        const CONTACT_ENDPOINT = "https://script.google.com/macros/s/AKfycbyFuaTicGAKz-NR9-ld2yqlOhbHa0OXiPV19VnlkOjHjIYL6AugBKjzgNGokOfFLpvToA/exec"; // paste the Apps Script web app URL here
+        // === Contact form backend (Google Apps Script Web App) ===
+        // 1) Deploy the Apps Script as a Web App (Execute as: Me; Who has access: Anyone)
+        // 2) Paste the /exec URL below
+        const CONTACT_ENDPOINT = "https://script.google.com/macros/s/AKfycbz8cph4p-LoQJUrxEvCVmgGKwt0cZbrSt6b5YuwQ0AemzRrmL-uf1yOc_ZNwtp5XNpm/exec";
 
         const form = document.getElementById("contact-form");
-        const statusEl = document.getElementById("form-status"); // add this element in HTML (see below)
+        const statusEl = document.getElementById("form-status");
+
+        function setStatus(msg, isError = false) {
+            if (!statusEl) return;
+            statusEl.textContent = msg;
+            statusEl.classList.toggle("error", !!isError);
+        }
 
         if (form) {
             form.addEventListener("submit", async (e) => {
-            e.preventDefault();
+                e.preventDefault();
 
-            if (statusEl) statusEl.textContent = "Sending...";
+                // reCAPTCHA v2 checkbox token (requires user interaction)
+                const recaptchaToken = (window.grecaptcha && grecaptcha.getResponse) ? grecaptcha.getResponse() : "";
 
-            const fd = new FormData(form);
-            const payload = Object.fromEntries(fd.entries());
+                if (!recaptchaToken) {
+                    setStatus("Please verify you're not a robot (reCAPTCHA).", true);
+                    return;
+                }
 
-            try {
-                const res = await fetch(CONTACT_ENDPOINT, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload)
-                });
+                setStatus("Sending...");
 
-                const data = await res.json();
+                const fd = new FormData(form);
+                const payload = Object.fromEntries(fd.entries());
 
-                if (!data.ok) throw new Error(data.error || "Unknown error");
+                // Add reCAPTCHA token for server-side verification
+                payload["g-recaptcha-response"] = recaptchaToken;
 
-                if (statusEl) statusEl.textContent = "Thank you — your message has been sent.";
-                form.reset();
-            } catch (err) {
-                if (statusEl) statusEl.textContent = "Sorry — something went wrong. Please try again.";
-                console.error(err);
-            }
+                try {
+                    const res = await fetch(CONTACT_ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await res.json();
+
+                    if (!data.ok) throw new Error(data.error || "Unknown error");
+
+                    setStatus("Thank you — your message has been sent.");
+                    form.reset();
+
+                    // Reset reCAPTCHA so the next submit requires a fresh token
+                    if (window.grecaptcha && grecaptcha.reset) grecaptcha.reset();
+                } catch (err) {
+                    console.error(err);
+                    setStatus("Sorry — something went wrong. Please try again or email us directly.", true);
+
+                    // Reset token in case it was consumed
+                    if (window.grecaptcha && grecaptcha.reset) grecaptcha.reset();
+                }
             });
         }
     </script>
