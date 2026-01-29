@@ -1820,6 +1820,10 @@ a.method-value:hover {
         --container-padding: 1rem;
     }
 
+    body {
+        overflow-x: hidden;
+    }
+
     /* Hero mobile fixes - aggressive */
     .hero-wrapper {
         background: linear-gradient(180deg, #f0f9ff 0%, #ffffff 50%, #ffffff 100%);
@@ -1910,6 +1914,7 @@ a.method-value:hover {
     }
 
     .hero-stats {
+        display: none; /* hiding the stats on mobiles, as its just consuming vertical space for now */
         width: 100%;
         justify-content: center;
         flex-wrap: wrap;
