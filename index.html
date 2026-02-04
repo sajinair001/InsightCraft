@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Michroma&family=Exo+2:wght@600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <!-- <link rel="stylesheet" href="styles.css"> -->
-    <link rel="icon" type="image/svg+xml" href="images/logo_navy.svg">
+    <link rel="icon" type="image/svg+xml" href="assets/images/logo_navy.svg">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <style>
 /* ============================================
@@ -365,6 +365,68 @@ section { scroll-margin-top: 90px; }
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-gray-900);
+}
+
+/* Pronunciation button */
+.pronounce-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  margin-left: 8px;
+  padding: 4px;
+  font-size: 0.9rem;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.pronounce-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.pronounce-btn:hover,
+.pronounce-btn:focus-visible {
+  opacity: 1;
+}
+
+/* Tooltip container */
+.pronounce-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Tooltip bubble */
+.pronounce-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  border-radius: 8px;
+
+  background: rgba(255, 255, 255, 0.95);
+  color: #0b1f33;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  border: 1px solid rgba(11, 31, 51, 0.12);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Show tooltip on hover + keyboard focus */
+.pronounce-btn:hover::after,
+.pronounce-btn:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
 }
 
 .nav-menu {
@@ -1948,6 +2010,11 @@ a.method-value:hover {
         line-height: 1.3;
     }    
 
+    .pronounce-btn::after {
+        bottom: calc(100% + 6px);
+        font-size: 0.72rem;
+    }    
+
     /* Mobile Navigation - Enhanced */
     .nav-menu {
         position: fixed;
@@ -2520,7 +2587,28 @@ a.method-value:hover {
                     </svg>
                 </div>
                 <span class="logo-text">AVIGNITY</span>
+                <span class="pronounce-tooltip">
+                    <button
+                        class="pronounce-btn"
+                        type="button"
+                        aria-label="How to pronounce Avignity"
+                        data-tooltip="Pronounced: uh-VIG-ni-tee">
+                        <svg class="icon icon-speaker" width="24" height="24" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            aria-hidden="true" focusable="false">
+                            <!-- speaker body -->
+                            <path d="M11 5L7.5 8H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2.5L11 19V5z"/>
+                            <!-- waves -->
+                            <path d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/>
+                            <path d="M18 8a6 6 0 0 1 0 8"/>
+                        </svg>
+                    </button>
+                </span>              
             </a>
+            <audio id="pronounce-audio" preload="none">
+            <source src="assets/audio/avignity_pronunciation.wav" type="audio/wav" />
+            </audio>            
             <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
                 <span></span>
                 <span></span>
@@ -2594,7 +2682,7 @@ a.method-value:hover {
         <div class="hero-image">
             <div class="hero-image-wrapper">
                 <!--<img src="https://picsum.photos/seed/teamwork/800/600"-->
-                    <img src="images/hero_image.jpg"
+                    <img src="assets/images/hero_image.jpg"
                      alt="Team collaborating on digital transformation"
                      loading="eager"
                      onerror="this.style.display='none'">
@@ -2819,12 +2907,12 @@ a.method-value:hover {
                 <div class="about-image">
                     <div class="image-stack">
                         <!--<img src="https://picsum.photos/seed/strategy/600/450" -->
-                            <img src="images/strategy_session_1.jpg"
+                            <img src="assets/images/strategy_session_1.jpg"
                              alt="Strategic planning session"
                              class="stack-image-1"
                              onerror="this.style.display='none'">
                         <!--<img src="https://picsum.photos/seed/analytics/600/450" -->
-                            <img src="images/dashboard_1.jpg"
+                            <img src="assets/images/dashboard_1.jpg"
                              alt="Data analytics dashboard"
                              class="stack-image-2"
                              onerror="this.style.display='none'">
@@ -2929,7 +3017,7 @@ a.method-value:hover {
             <div class="team-grid">
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="images/partner1.jpg" alt="Saji Nair" onerror="this.style.display='none'" class="team-photo">
+                        <img src="assets/images/partner1.jpg" alt="Saji Nair" onerror="this.style.display='none'" class="team-photo">
                         <div class="team-overlay">
                             <div class="team-social">
                                 <a href="https://www.linkedin.com/in/sajinair001" target="_blank" rel="noopener" aria-label="LinkedIn">
@@ -2964,7 +3052,7 @@ a.method-value:hover {
                 </div>
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="images/partner2.jpg"
+                        <img src="assets/images/partner2.jpg"
                              alt="Ken Turner"
                              onerror="this.style.display='none'">
                         <div class="team-overlay">
@@ -3000,7 +3088,7 @@ a.method-value:hover {
                 </div>                
                 <div class="team-card">
                     <div class="team-image">
-                        <img src="images/partner3.jpg"
+                        <img src="assets/images/partner3.jpg"
                              alt="Matt St. Jarre - Managing Partner"
                              onerror="this.style.display='none'">
                         <div class="team-overlay">
@@ -3824,6 +3912,24 @@ a.method-value:hover {
                 }
             });
         }
+    </script>
+
+    <!-- Play Company Name Audio -->
+    <script>
+        (function () {
+            const btn = document.querySelector(".pronounce-btn");
+            const audio = document.getElementById("pronounce-audio");
+            if (!btn || !audio) return;
+
+            btn.addEventListener("click", () => {
+            // restart each time for a crisp "1 second" feel
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play().catch(() => {
+                // If autoplay is blocked (rare since it's a click), do nothing.
+            });
+            });
+        })();
     </script>
 </body>
 </html>
